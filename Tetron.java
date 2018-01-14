@@ -1,3 +1,5 @@
+import java.math.*;
+
 /**
 * This implements two commutative 4d hypercomplex groups..
 *  one as defined by Clyde Davenport..
@@ -12,6 +14,14 @@
 *  L. Saul May 2003
 */
 public class Tetron {
+
+	
+	public static double phi = (1.0+Math.sqrt(5))/2.0;
+	public static double psi = (1.0-Math.sqrt(5))/2.0;
+        public static double logphi = Math.log(phi);
+	public static double logpsi = Math.log(0.0-psi);
+	
+	
 
 	/**
 	* There are two implementations.. switch between them with this
@@ -188,14 +198,32 @@ public class Tetron {
 	public static Tetron log (Tetron t) {
 		Tetron temp = new Tetron();
 		Tetron tMinus1 = new Tetron(t.a-1.0, t.b, t.c, t.d);
-		double sign = 1;
+		double sign = -1.0;
 		for (int i=1; i<20; i++) {
-			sum( temp, pow(tMinus1,i).product(sign/(double)i) );
-			sign*=-1.0;
-			System.out.println(temp+"");
+			sum( temp, pow(tMinus1,i).product(sign/(double)(i)) );
+			sign=sign * -1.0;
+			System.out.println("sign,temp"+"\t"+sign+"\t"+temp+"");
 		}
 		return temp;
 	}
+
+
+	/**
+	* Lets do a fibonacci series operation.. find the "Qth" term of the series 
+	*/
+        public static Tetron fibonacci(Tetron in) {
+		
+		Tetron tbr = new Tetron();
+		Tetron p1, p2, p3;	
+		p1 = Tetron.exp(in.product(logphi));
+		p2 = Tetron.exp(in.product(logpsi));
+		p3 = Tetron.exp(in.product(ONE.inverse()));
+		System.out.println("in fib: " + p1.toString() + "\t" + p2.toString());	
+		tbr = p1.sum(p2.product(p3).inverse());
+		return tbr.product(1.0/Math.sqrt(5.0));
+	}
+		
+		
 
 	/**
 	* Magnitude of a tetron
@@ -249,7 +277,20 @@ public class Tetron {
 		System.out.println("e^1 = " + exp(ONE));
 		System.out.println("e^iPi = " + exp(I.product(Math.PI)));
 		System.out.println("log(1) = " + log(ONE));
+		System.out.println("log(-1) = " + log(ONE.inverse()));
 		System.out.println("log(E) = " + log(new Tetron(Math.E,0.0,0.0,0.0)));
+		System.out.println("logphi,psi: " + logphi + "\t" + logpsi+ "\n");
+
+		// start Fibonacci test
+		file f = new file("fibout.txt");  f.initWrite(false);
+		Tetron t = Tetron.ONE;
+		Tetron res = Tetron.ONE;
+		for (double i = 0.0; i<10.0; i=i+0.1) {
+			t.a = t.a + 0.1;			
+			res = Tetron.fibonacci(t);			
+			f.write(t.a + "\t" + Tetron.mag(res) + "\t" + res.a + "\n");
+		}
+		f.closeWrite();
 
 	}
 }
