@@ -16,10 +16,8 @@ import java.math.*;
 public class Tetron {
 
 	
-	public static double phi = (1.0+Math.sqrt(5))/2.0;
-	public static double psi = (1.0-Math.sqrt(5))/2.0;
+	public static double phi = (1.0+Math.sqrt(5.0))/2.0;
         public static double logphi = Math.log(phi);
-	public static double logpsi = Math.log(0.0-psi);
 	
 	
 
@@ -62,10 +60,10 @@ public class Tetron {
 	*/
 	public Tetron product(Tetron t) {
 		if (t.type==0) return new Tetron(
-									a*t.a - b*t.b - c*t.c + d*t.d,
-		  						    a*t.b + b*t.a + c*t.d + d*t.c,
-								    a*t.c + b*t.d + c*t.a + d*t.b,
-								    a*t.d - b*t.c - c*t.b + d*t.a);
+							a*t.a - b*t.b - c*t.c + d*t.d,
+	  						    a*t.b + b*t.a + c*t.d + d*t.c,
+							    a*t.c + b*t.d + c*t.a + d*t.b,
+							    a*t.d - b*t.c - c*t.b + d*t.a);
 
 		else if (t.type==1) return new Tetron(
 							   a*t.a - b*t.b - c*t.c + d*t.d,
@@ -91,7 +89,7 @@ public class Tetron {
 		if (t.type==0) {
 			ta = d.a*t.a - d.b*t.b - d.c*t.c + d.d*t.d;
 			tb = d.a*t.b + d.b*t.a + d.c*t.d + d.d*t.c;
-	    	tc = d.a*t.c + d.b*t.d + d.c*t.a + d.d*t.b;
+	    		tc = d.a*t.c + d.b*t.d + d.c*t.a + d.d*t.b;
 			td = d.a*t.d - d.b*t.c - d.c*t.b + d.d*t.a;
 
 			t.a=ta; t.b=tb; t.c=tc; t.d=td;
@@ -123,6 +121,7 @@ public class Tetron {
 
 	/**
 	* sum by reference (change 1st arg)
+	* t = t+d   
 	*/
 	public static void sum(Tetron t, Tetron d) {
 		t.a=d.a+t.a;   t.b=d.b+t.b;  t.c=d.c+t.c;  t.d=d.d+t.d;
@@ -169,7 +168,7 @@ public class Tetron {
 	* Integer powers are important first...
 	*
 	*/
-	public static Tetron pow (Tetron t, int pow) {
+	/*public static Tetron pow (Tetron t, int pow) {
 		if (pow==1) return t;
 		if (pow==0) return ONE;
 		if (pow<0) return null;
@@ -180,22 +179,44 @@ public class Tetron {
 		}
 		return temp;
 	}
+	*/
 
 	/**
 	* Now we can do exponentiation..
 	*/
 	public static Tetron exp (Tetron t) {
-		Tetron temp = new Tetron();
-		for (int i=0; i<15; i++) {
-			sum( temp, pow(t,i).product(1.0/fact(i)) );
+		Tetron base = new Tetron();
+		double factoid = 1.0;
+		base.setCoords(ONE);  // this is going to change each iteration  
+		Tetron tbr = new Tetron();
+		tbr.setCoords(ZERO);
+		for (double i=0.0; i<55.0; i=i+1.0) {
+			sum( tbr, base.product(1.0/factoid) );
+			product(base,t);            // prepare the base for next loop
+			factoid = factoid*(i+1.0);  // prepare the factorial for next loop
 		}
-		return temp;
+		return tbr;
 	}
 
 	/**
+	* Now we can do exponentiation..  or can we?  lets try it with doubles
+	*/
+	public static double exp (double t) {
+		double base = 1.0;
+		double factoid = 1.0; 
+		double tbr = 0.0;
+
+		for (double i=0.0; i<100.0; i=i+1.0) {
+			tbr = tbr + base/factoid;
+			base = base*t;            // prepare the base for next loop
+			factoid = factoid*(i+1.0);  // prepare the factorial for next loop
+		}
+		return tbr;
+	}
+	/**
 	* And logarithms..
 	*/
-	public static Tetron log (Tetron t) {
+	/*public static Tetron log (Tetron t) {
 		Tetron temp = new Tetron();
 		Tetron tMinus1 = new Tetron(t.a-1.0, t.b, t.c, t.d);
 		double sign = -1.0;
@@ -205,9 +226,25 @@ public class Tetron {
 			System.out.println("sign,temp"+"\t"+sign+"\t"+temp+"");
 		}
 		return temp;
+	}*/
+
+	/**
+	*In fact this is a multivalued function but we choose a branch log(-1)=i*pi
+	*/
+	public static Tetron minusOneToTheN(Tetron n) {
+		//Tetron t = ONE.inverse();
+		//Tetron t1 = I.product(Math.PI);
+		Tetron ponent = new Tetron();
+		ponent.a = 0.0-Math.PI*n.b;
+		ponent.b = Math.PI*n.a;
+		ponent.c = 0.0 - Math.PI*n.d;
+		ponent.d = Math.PI*n.c;
+		//System.out.println("t1 : " + t1.toString() + " n " + n.toString());
+		//t1 = t1.product(1.0/Math.sqrt(2));
+		return exp(ponent);
 	}
 
-
+		
 	/**
 	* Lets do a fibonacci series operation.. find the "Qth" term of the series 
 	*/
@@ -216,9 +253,9 @@ public class Tetron {
 		Tetron tbr = new Tetron();
 		Tetron p1, p2, p3;	
 		p1 = Tetron.exp(in.product(logphi));
-		p2 = Tetron.exp(in.product(logpsi));
-		p3 = Tetron.exp(in.product(ONE.inverse()));
-		System.out.println("in fib: " + p1.toString() + "\t" + p2.toString());	
+		p2 = minusOneToTheN(in);
+		p3 = Tetron.exp(in.inverse().product(logphi));		
+		//System.out.println("in fib: " + p1.toString() + "\t" + p2.toString() + "\t" + p3.toString());	
 		tbr = p1.sum(p2.product(p3).inverse());
 		return tbr.product(1.0/Math.sqrt(5.0));
 	}
@@ -269,21 +306,94 @@ public class Tetron {
 	*/
 	public static final void main(String[] args) {
 		System.out.println("IPI = " + I.product(Math.PI));
-		System.out.println("IPI^3 = " + pow(I.product(Math.PI),3));
-		System.out.println("k^2 = " + pow(K,2));
-		System.out.println("j^3 = " + pow(J,3));
-		System.out.println("k^3 = " + pow(K,3));
+		//System.out.println("IPI^3 = " + pow(I.product(Math.PI),3));
+		//System.out.println("k^2 = " + pow(K,2));
+		//System.out.println("j^3 = " + pow(J,3));
+		//System.out.println("k^3 = " + pow(K,3));
+		System.out.println("fact(0) = " + fact(0));
+		System.out.println("fact(2) = " + fact(2));
+		System.out.println("fact(3) = " + fact(3));
 		// test the exp
-		System.out.println("e^1 = " + exp(ONE));
+		System.out.println("e^1 = " + Tetron.exp(ONE));
+		Tetron tempT = new Tetron();
+		tempT.setCoords(1.0,0.0,0.0,0.0);
+		System.out.println("e^1 = " + Tetron.exp(tempT));
+		System.out.println("e^-1 = " + Tetron.exp(ONE.inverse()));
+		System.out.println("e^0 = " + Tetron.exp(ZERO));
+		System.out.println("e^2 = " + Tetron.exp(ONE.sum(ONE)));
 		System.out.println("e^iPi = " + exp(I.product(Math.PI)));
-		System.out.println("log(1) = " + log(ONE));
-		System.out.println("log(-1) = " + log(ONE.inverse()));
-		System.out.println("log(E) = " + log(new Tetron(Math.E,0.0,0.0,0.0)));
-		System.out.println("logphi,psi: " + logphi + "\t" + logpsi+ "\n");
+		System.out.println("e^jPi = " + exp(J.product(Math.PI)));
+		System.out.println("e^kPi = " + exp(K.product(Math.PI)));
+		System.out.println("ONE.product(1.0) = " + ONE.product(1.0));
+		System.out.println("J.product(2.1) = " + J.product(2.1));
+		System.out.println("-1^1 = " + minusOneToTheN(ONE.product(1.0)));
+		System.out.println("mag -1^1 = " + mag(minusOneToTheN(ONE.product(1.0))));
+		System.out.println("-1^i = " + minusOneToTheN(I));
+		System.out.println("mag -1^j = " + mag(minusOneToTheN(J)));
+		System.out.println("-1^j = " + minusOneToTheN(J));
+		System.out.println("mag -1^k = " + mag(minusOneToTheN(K)));
+		System.out.println("-1^k = " + minusOneToTheN(K));
+		System.out.println("mag -1^i = " + mag(minusOneToTheN(I)));
+		System.out.println("-1^3 = " + minusOneToTheN(ONE.product(3.0)));
+		System.out.println("mag -1^3 = " + mag(minusOneToTheN(ONE.product(3.0))));
+		System.out.println("-1^4 = " + minusOneToTheN(ONE.product(4.0)));
+		System.out.println("mag -1^4 = " + mag(minusOneToTheN(ONE.product(4.0))));
+		System.out.println("Fib ONE= " + fibonacci(ONE));
+		System.out.println("Fib TWO= " + fibonacci(ONE.product(2.0)));
+		System.out.println("Fib THREE= " + fibonacci(ONE.product(3.0)));
+		System.out.println("Fib 4= " + fibonacci(ONE.product(4.0)));
+		System.out.println("Fib 5= " + fibonacci(ONE.product(5.0)));
+		System.out.println("Fib 6= " + fibonacci(ONE.product(6.0)));
+		System.out.println("Fib i= " + fibonacci(I));
+		System.out.println("Fib j= " + fibonacci(J));
+		System.out.println("Fib k= " + fibonacci(K));
+
+
+		System.out.println("-ONE product 10 = " + ONE.inverse().product(ONE.product(10)));
+
+	//	System.out.println("log(1) = " + log(ONE));
+//		System.out.println("log(-1) = " + log(ONE.inverse()));
+//		System.out.println("log(E) = " + log(new Tetron(Math.E,0.0,0.0,0.0)));
+//		System.out.println("logphi,psi: " + logphi + "\t" + logpsi+ "\n");
+// start exp test
+	
+	
+
+/*		file fx = new file("expout.txt");  fx.initWrite(false);
+		Tetron tx = new Tetron();
+		Tetron resx = new Tetron();
+		for (double i = -3.0; i<3.0; i=i+0.1) {
+			tx.setCoords(i,0.0,0.0,0.0);		
+			resx = Tetron.exp(tx);			
+			fx.write(tx.a  + "\t" + resx + "\n");
+		}
+		fx.closeWrite();
+
+*/
+/*
+		fx = new file("expout2.txt");  fx.initWrite(false);
+		double resres = 1;
+		for (double i = -3.0; i<3.0; i=i+0.01) {			
+			resres = exp(i);			
+			fx.write(i + "\t" + resres + "\n");
+		}
+		fx.closeWrite();
+*/
+		file f = new file("fibout.txt");  f.initWrite(false);
+		Tetron t = new Tetron();
+		Tetron res = new Tetron();
+		for (double i = -2.0; i<2.0; i=i+0.01) {
+			t.setCoords(0.0,0.0,i,0.0);			
+			res = fibonacci(t);			
+			f.write(i  + "\t" + res.a + "\t" + res.b + "\t" + res.c + "\t" + res.d + "\t" + mag(res) + "\n");
+		}
+		f.closeWrite();
+
+
 
 		// start Fibonacci test
-		file f = new file("fibout.txt");  f.initWrite(false);
-		Tetron t = Tetron.ONE;
+/*		file f = new file("fibout.txt");  f.initWrite(false);
+		Tetron t = Tetron.ZERO;
 		Tetron res = Tetron.ONE;
 		for (double i = 0.0; i<10.0; i=i+0.1) {
 			t.a = t.a + 0.1;			
@@ -291,6 +401,7 @@ public class Tetron {
 			f.write(t.a + "\t" + Tetron.mag(res) + "\t" + res.a + "\n");
 		}
 		f.closeWrite();
+*/
 
 	}
 }

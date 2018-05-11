@@ -1,0 +1,27 @@
+#!/usr/bin/gnuplot
+reset
+set terminal png
+
+#set xdata time
+#set timefmt "%d/%m/%Y %H:%M:%S"
+#set format x "%H:%M"
+#set xlabel "time"
+
+set ylabel "Fib(jx)"
+#set yrange [1E-5:1E20]
+set yrange [-10:10]
+#set logscale y
+#set format y "%.0s*10^{%T}"
+
+set title "jth Fibonacci number"
+set key reverse Left outside
+set grid
+
+set style data linespoints
+
+plot "fibout.txt" using 1:2 title "1-Component" , \
+"" using 1:3 title "i-Component", \
+"" using 1:4 title "j-Component", \
+"" using 1:5 title "k-Component"
+
+#
