@@ -1,0 +1,15 @@
+#!/usr/bin/gnuplot
+reset
+set terminal png
+
+set title "Fib(xi+yk) (i-comp)"
+set hidden3d
+set dgrid3d 50,50 qnorm 2
+set xlabel "i"
+set ylabel "k"
+set xrange [-1:5]
+set yrange [-1:5]
+set zlabel "Fib(z)"
+set key off
+splot 'fibout3d.txt' using 1:2:4 with lines
+#

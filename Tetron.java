@@ -190,7 +190,7 @@ public class Tetron {
 		base.setCoords(ONE);  // this is going to change each iteration  
 		Tetron tbr = new Tetron();
 		tbr.setCoords(ZERO);
-		for (double i=0.0; i<55.0; i=i+1.0) {
+		for (double i=0.0; i<150.0; i=i+1.0) {
 			sum( tbr, base.product(1.0/factoid) );
 			product(base,t);            // prepare the base for next loop
 			factoid = factoid*(i+1.0);  // prepare the factorial for next loop
@@ -206,7 +206,7 @@ public class Tetron {
 		double factoid = 1.0; 
 		double tbr = 0.0;
 
-		for (double i=0.0; i<100.0; i=i+1.0) {
+		for (double i=0.0; i<150.0; i=i+1.0) {
 			tbr = tbr + base/factoid;
 			base = base*t;            // prepare the base for next loop
 			factoid = factoid*(i+1.0);  // prepare the factorial for next loop
@@ -347,6 +347,27 @@ public class Tetron {
 		System.out.println("Fib i= " + fibonacci(I));
 		System.out.println("Fib j= " + fibonacci(J));
 		System.out.println("Fib k= " + fibonacci(K));
+		System.out.println("ratio 1 = " + fibonacci(ONE.product(10.0)).a/fibonacci(ONE.product(9.0)).a);
+		System.out.println("ratio 1 = " + fibonacci(ONE.product(10.0)).b/fibonacci(ONE.product(9.0)).b);
+		System.out.println("ratio 1 = " + fibonacci(ONE.product(10.0)).c/fibonacci(ONE.product(9.0)).c);
+		System.out.println("ratio 1 = " + fibonacci(ONE.product(10.0)).d/fibonacci(ONE.product(9.0)).d);
+		System.out.println("ratio 1 = " + fibonacci(I.product(10.0)).a/fibonacci(I.product(9.0)).a);
+		System.out.println("ratio 1 = " + fibonacci(I.product(10.0)).b/fibonacci(I.product(9.0)).b);
+		System.out.println("ratio 1 = " + fibonacci(I.product(10.0)).c/fibonacci(I.product(9.0)).c);
+		System.out.println("ratio 1 = " + fibonacci(I.product(10.0)).d/fibonacci(I.product(9.0)).d);
+		System.out.println("ratio 1 = " + fibonacci(J.product(10.0)).a/fibonacci(J.product(9.0)).a);
+		System.out.println("ratio 1 = " + fibonacci(J.product(10.0)).b/fibonacci(J.product(9.0)).b);
+		System.out.println("ratio 1 = " + fibonacci(J.product(10.0)).c/fibonacci(J.product(9.0)).c);
+		System.out.println("ratio 1 = " + fibonacci(J.product(10.0)).d/fibonacci(J.product(9.0)).d);
+		System.out.println("ratio 1 = " + fibonacci(K.product(10.0)).a/fibonacci(K.product(9.0)).a);
+		System.out.println("ratio 1 = " + fibonacci(K.product(10.0)).b/fibonacci(K.product(9.0)).b);
+		System.out.println("ratio 1 = " + fibonacci(K.product(10.0)).c/fibonacci(K.product(9.0)).c);
+		System.out.println("ratio 1 = " + fibonacci(K.product(10.0)).d/fibonacci(K.product(9.0)).d);
+
+
+		System.out.println("ratio ib = " + fibonacci(I.product(11.0)).b/fibonacci(I.product(10.0)).b);
+		System.out.println("ratio 1b = " + fibonacci(I.product(12.0)).b/fibonacci(I.product(11.0)).b);
+		System.out.println("ratio 1b = " + fibonacci(I.product(13.0)).b/fibonacci(I.product(12.0)).b);
 
 
 		System.out.println("-ONE product 10 = " + ONE.inverse().product(ONE.product(10)));
@@ -379,15 +400,35 @@ public class Tetron {
 		}
 		fx.closeWrite();
 */
+
+
 		file f = new file("fibout.txt");  f.initWrite(false);
 		Tetron t = new Tetron();
 		Tetron res = new Tetron();
-		for (double i = -2.0; i<2.0; i=i+0.01) {
-			t.setCoords(0.0,0.0,i,0.0);			
+		for (double i = 0.0; i<2.0*Math.PI; i=i+0.01) {
+			t.setCoords(0.0,Math.cos(i),Math.sin(i),0.0);			
 			res = fibonacci(t);			
 			f.write(i  + "\t" + res.a + "\t" + res.b + "\t" + res.c + "\t" + res.d + "\t" + mag(res) + "\n");
 		}
 		f.closeWrite();
+
+		
+		// LETS MEAKE A 3DD THINGY
+/*
+		file f = new file("fibout3d.txt");  f.initWrite(false);
+		Tetron t = new Tetron();
+		Tetron res = new Tetron();
+		for (double a = -5.0; a<5.0; a=a+0.1) {
+			for (double k = -5.0; k<5.0; k+=0.1) {
+				t.setCoords(0.0,a,0.0,k);			
+				res = fibonacci(t);			
+				f.write(a  + "\t" + k+ "\t" + res.a + "\t" + res.b + "\t" + res.c + "\t" + res.d + "\t" + mag(res) + "\n");
+				
+			}
+		}
+		f.closeWrite();
+*/
+
 
 
 

@@ -1,0 +1,14 @@
+#!/usr/bin/gnuplot
+reset
+set terminal png
+
+set title "Fib[icos(t)+jsin(t)] (unit circle in i-j plane)"
+
+set key off
+set parametric
+
+set xlabel "1-coord"
+set ylabel "i-coord"
+
+plot "fibout.txt" using 2:3:1 title "1-Component" , \
+#

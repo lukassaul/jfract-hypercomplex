@@ -6,21 +6,22 @@ set terminal png
 #set timefmt "%d/%m/%Y %H:%M:%S"
 #set format x "%H:%M"
 #set xlabel "time"
+set xrange [-0.5:2]
 
-set ylabel "Fib(jx)"
+set ylabel "Fib(z)"
 #set yrange [1E-5:1E20]
-set yrange [-10:10]
+#set yrange [-8:8]
 #set logscale y
 #set format y "%.0s*10^{%T}"
 
-set title "jth Fibonacci number"
+set title "Fibonacci[cos, sin, sin, cosh] t from 0 to 2PI"
 set key reverse Left outside
 set grid
 
 set style data linespoints
 
 plot "fibout.txt" using 1:2 title "1-Component" , \
-"" using 1:3 title "i-Component", \
+"" using 1:3 title "i-Component" , \
 "" using 1:4 title "j-Component", \
 "" using 1:5 title "k-Component"
 
